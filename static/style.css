@@ -1,0 +1,80 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: white;
+    font-family: Arial, sans-serif;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+#lobby {
+    text-align: center;
+}
+
+#lobby input {
+    font-size: 1.5rem;
+    padding: 10px;
+    margin: 20px 0;
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    width: 80%;
+}
+
+#lobby button {
+    font-size: 1.5rem;
+    padding: 15px 30px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#kontroler {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+#joystick-zone {
+    width: 50%;
+    height: 100%;
+    position: relative;
+}
+
+#action-zone {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    padding-right: 40px;
+}
+
+.action-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    font-size: 2rem;
+    font-weight: bold;
+    border: none;
+    color: white;
+}
+
+#btn-a { background-color: #e74c3c; margin-top: 80px; }
+#btn-b { background-color: #f1c40f; margin-bottom: 80px; }

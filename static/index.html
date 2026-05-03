@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wirtualny Pad</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+</head>
+<body>
+
+    <div id="lobby">
+        <h1>Wpisz swój Nick</h1>
+        <input type="text" id="nick" placeholder="Np. SzybkiKrzysiek" maxlength="12">
+        <button id="btn-graj">Dołącz do gry!</button>
+    </div>
+
+    <div id="kontroler" style="display: none;">
+        <div id="joystick-zone"></div>
+        <div id="action-zone">
+            <button id="btn-b" class="action-btn">B</button>
+            <button id="btn-a" class="action-btn">A</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

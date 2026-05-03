@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  gamepad-server:
+    build: .
+    ports:
+      - "8000:8000"
+    devices:
+      - "/dev/uinput:/dev/uinput"
+    restart: unless-stopped
