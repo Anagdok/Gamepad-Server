@@ -17,9 +17,7 @@ body {
     width: 100vw;
 }
 
-#lobby {
-    text-align: center;
-}
+#lobby { text-align: center; }
 
 #lobby input {
     font-size: 1.5rem;
@@ -47,34 +45,70 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
 }
 
-#joystick-zone {
-    width: 50%;
-    height: 100%;
-    position: relative;
+/* Stylizacja D-Pada (3x3 Grid) */
+#dpad-zone {
+    width: 180px;
+    height: 180px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
-#action-zone {
-    width: 50%;
-    height: 100%;
+.dpad-btn {
+    background-color: #2c3e50;
+    border: 2px solid #34495e;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+#dpad-up { grid-column: 2; grid-row: 1; border-bottom: none; border-radius: 8px 8px 0 0; }
+#dpad-left { grid-column: 1; grid-row: 2; border-right: none; border-radius: 8px 0 0 8px; }
+.dpad-center { grid-column: 2; grid-row: 2; background-color: #2c3e50; }
+#dpad-right { grid-column: 3; grid-row: 2; border-left: none; border-radius: 0 8px 8px 0; }
+#dpad-down { grid-column: 2; grid-row: 3; border-top: none; border-radius: 0 0 8px 8px; }
+
+/* Sekcja MENU (Środek) */
+#menu-zone {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
     gap: 20px;
-    padding-right: 40px;
+    align-self: flex-end;
+    margin-bottom: 20px;
+}
+
+.menu-btn {
+    width: 75px;
+    height: 25px;
+    background-color: #7f8c8d;
+    color: #121212;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 0 4px #95a5a6;
+}
+
+/* Sekcja Przycisków Akcji */
+#action-zone {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
 .action-btn {
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
     border: none;
     color: white;
+    box-shadow: 0 6px rgba(0,0,0,0.3);
 }
 
-#btn-a { background-color: #e74c3c; margin-top: 80px; }
-#btn-b { background-color: #f1c40f; margin-bottom: 80px; }
+#btn-a { background-color: #e74c3c; margin-top: 50px; }
+#btn-b { background-color: #f1c40f; margin-bottom: 50px; }

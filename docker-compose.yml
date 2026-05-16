@@ -5,7 +5,7 @@ services:
       context: .
       network: host
     ports:
-      - "8000:8000"
+      - "80:8000" # Zmiana portu na 80, aby obsługiwać czysty adres http://gamepad
     devices:
       - "/dev/uinput:/dev/uinput"
     restart: unless-stopped

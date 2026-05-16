@@ -7,9 +7,13 @@ const ekranKontrolera = document.getElementById('kontroler');
 const nickInput = document.getElementById('nick');
 const btnGraj = document.getElementById('btn-graj');
 
-let obecnyStan = { x: 128, y: 128, a: 0, b: 0 };
-let wyslanyStan = { x: 128, y: 128, a: 0, b: 0 };
+// 128 oznacza pozycję neutralną (środek)
+let obecnyStan = { x: 128, y: 128, a: 0, b: 0, start: 0, select: 0 };
+let wyslanyStan = { x: 128, y: 128, a: 0, b: 0, start: 0, select: 0 };
 let petlaWysylania;
+
+// Pomocniczy obiekt do śledzenia aktywnych kierunków D-Pada
+let dpadKierunki = { up: false, down: false, left: false, right: false };
 
 btnGraj.addEventListener('click', () => {
     const nick = nickInput.value.trim() || "Gracz_" + Math.floor(Math.random() * 1000);
@@ -27,66 +31,75 @@ function start(nick) {
     };
 
     ws.onclose = () => {
-        alert("Rozłączono z serwerem gier!");
+        alert("Rozłączono z serwerem!");
         clearInterval(petlaWysylania);
         location.reload();
     };
 }
 
 function uruchomInterfejsGry() {
-    const joystickZone = document.getElementById('joystick-zone');
-    const manager = nipplejs.create({
-        zone: joystickZone,
-        mode: 'static',
-        position: { left: '30%', top: '50%' },
-        color: 'white',
-        size: 150
-    });
+    // Funkcja mapująca stan przycisków kierunkowych na wartości osi evdev (0, 128, 255)
+    function aktualizujOsieDpad() {
+        if (dpadKierunki.left) obecnyStan.x = 0;
+        else if (dpadKierunki.right) obecnyStan.x = 255;
+        else obecnyStan.x = 128;
 
-    manager.on('move', (evt, data) => {
-        const dystans = data.distance; 
-        const maxDystansNipple = manager.options.size / 2;
-        const katRadiany = data.angle.radian;
-        
-        const rawX = Math.cos(katRadiany) * (dystans / maxDystansNipple) * 127;
-        const rawY = Math.sin(katRadiany) * (dystans / maxDystansNipple) * 127;
+        if (dpadKierunki.up) obecnyStan.y = 0;
+        else if (dpadKierunki.down) obecnyStan.y = 255;
+        else obecnyStan.y = 128;
+    }
 
-        obecnyStan.x = Math.round(128 + rawX);
-        obecnyStan.y = Math.round(128 - rawY); 
-    });
-
-    manager.on('end', () => {
-        obecnyStan.x = 128;
-        obecnyStan.y = 128;
-    });
-
-    const btnA = document.getElementById('btn-a');
-    const btnB = document.getElementById('btn-b');
-
-    const przypiszGuzik = (element, kluczStanu) => {
-        element.addEventListener('touchstart', (e) => {
-            e.preventDefault(); 
-            obecnyStan[kluczStanu] = 1;
-            element.style.opacity = '0.5';
+    // Obsługa fizycznego dotyku dla przycisków D-Pada
+    const konfigurujDpad = (idElementu, kluczKierunku) => {
+        const el = document.getElementById(idElementu);
+        el.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dpadKierunki[kluczKierunku] = true;
+            el.style.backgroundColor = '#34495e';
+            aktualizujOsieDpad();
         });
-        element.addEventListener('touchend', (e) => {
-            e.preventDefault(); 
-            obecnyStan[kluczStanu] = 0;
-            element.style.opacity = '1';
+        el.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            dpadKierunki[kluczKierunku] = false;
+            el.style.backgroundColor = '#2c3e50';
+            aktualizujOsieDpad();
         });
     };
 
-    przypiszGuzik(btnA, 'a');
-    przypiszGuzik(btnB, 'b');
+    konfigurujDpad('dpad-up', 'up');
+    konfigurujDpad('dpad-down', 'down');
+    konfigurujDpad('dpad-left', 'left');
+    konfigurujDpad('dpad-right', 'right');
 
+    // Uniwersalna funkcja dla standardowych przycisków (A, B, START, SELECT)
+    const konfigurujPrzycisk = (idElementu, kluczStanu) => {
+        const el = document.getElementById(idElementu);
+        el.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            obecnyStan[kluczStanu] = 1;
+            el.style.opacity = '0.6';
+        });
+        el.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            obecnyStan[kluczStanu] = 0;
+            el.style.opacity = '1';
+        });
+    };
+
+    konfigurujPrzycisk('btn-a', 'a');
+    konfigurujPrzycisk('btn-b', 'b');
+    konfigurujPrzycisk('btn-start', 'start');
+    konfigurujPrzycisk('btn-select', 'select');
+
+    // Wysyłanie zmian co ~33ms (30 FPS), tylko jeśli stan się zmienił
     petlaWysylania = setInterval(() => {
         let pakietZmian = {};
         let czyCokolwiekSieZmienilo = false;
 
-        for (let os_lub_guzik in obecnyStan) {
-            if (obecnyStan[os_lub_guzik] !== wyslanyStan[os_lub_guzik]) {
-                pakietZmian[os_lub_guzik] = obecnyStan[os_lub_guzik];
-                wyslanyStan[os_lub_guzik] = obecnyStan[os_lub_guzik];
+        for (let element in obecnyStan) {
+            if (obecnyStan[element] !== wyslanyStan[element]) {
+                pakietZmian[element] = obecnyStan[element];
+                wyslanyStan[element] = obecnyStan[element];
                 czyCokolwiekSieZmienilo = true;
             }
         }
@@ -94,5 +107,5 @@ function uruchomInterfejsGry() {
         if (czyCokolwiekSieZmienilo && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ akcja: "STAN", stan: pakietZmian }));
         }
-    }, 1000 / 30); 
+    }, 1000 / 30);
 }

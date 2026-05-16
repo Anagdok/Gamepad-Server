@@ -17,8 +17,9 @@ def read_root():
 aktywne_pady = {}
 
 def stworz_pada(nick):
+    # Dodajemy przyciski START i SELECT do rejestru możliwości wirtualnego kontrolera
     mozliwosci = {
-        e.EV_KEY: [e.BTN_SOUTH, e.BTN_EAST], # BTN_SOUTH to A, BTN_EAST to B
+        e.EV_KEY: [e.BTN_SOUTH, e.BTN_EAST, e.BTN_START, e.BTN_SELECT], # A, B, START, SELECT
         e.EV_ABS: [
             (e.ABS_X, evdev.AbsInfo(value=128, min=0, max=255, fuzz=0, flat=0, resolution=0)),
             (e.ABS_Y, evdev.AbsInfo(value=128, min=0, max=255, fuzz=0, flat=0, resolution=0))
@@ -41,7 +42,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 nick = wiadomosc.get("nick", "Gracz")
                 pad = stworz_pada(nick)
                 aktywne_pady[websocket] = pad
-                print(f"Gracz '{nick}' dołączył!")
+                print(f"Gracz '{nick}' dołączył do gry!")
 
             elif akcja == "STAN" and pad:
                 stan = wiadomosc.get("stan", {})
@@ -53,11 +54,15 @@ async def websocket_endpoint(websocket: WebSocket):
                     pad.write(e.EV_KEY, e.BTN_SOUTH, stan["a"])
                 if "b" in stan:
                     pad.write(e.EV_KEY, e.BTN_EAST, stan["b"])
+                if "start" in stan:
+                    pad.write(e.EV_KEY, e.BTN_START, stan["start"])
+                if "select" in stan:
+                    pad.write(e.EV_KEY, e.BTN_SELECT, stan["select"])
                 
                 pad.syn()
 
     except WebSocketDisconnect:
-        print(f"Gracz '{nick}' się rozłączył.")
+        print(f"Gracz '{nick}' rozłączył się.")
         if pad:
             pad.close()
             del aktywne_pady[websocket]
